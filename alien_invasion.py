@@ -21,19 +21,23 @@ class AlienInvasion:
     def run_game(self):
         """ Start the main loop of the game """
         while True:
-            # Events of the game
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
-
-            # Fill the screen with color
-            self.screen.fill(self.settings.bg_color)
-            self.ship.blitme()
-
-            # Display  screen terlihat
-            pygame.display.flip()
+            self._check_events()
+            self._update_screen()
             self.clock.tick(60) # 60 seconds frame rate
+    
+    def _check_events(self):
+        # Events of the game
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+    
+    def _update_screen(self):
+        # Fill the screen with color
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
 
+        # Display  screen terlihat
+        pygame.display.flip()
 if __name__ == '__main__':
     # Run the game
     alien_invasion = AlienInvasion()
