@@ -12,13 +12,13 @@ class Ship:
         self.image = pygame.image.load('images/ship.bmp')
         self.rect = self.image.get_rect()
 
-        # Simpan posisi horizontal pesawat di x
-        self.x = float(self.rect.x)
-
         # Setting posisi pesawat ketika game dimulai
         self.rect.midbottom = self.screen_rect.midbottom
 
-        # Setting movement dgn flag; dimulai dengan posisi diam
+        # Simpan posisi horizontal pesawat di x
+        self.x = float(self.rect.x)
+
+        # Setting movement dgn flag; dimulai dengan posisi diam: False
         self.move_right = False
         self.move_left = False
     
