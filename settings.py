@@ -14,3 +14,9 @@ class Settings:
         self.bullet_height = 15 # pixels
         self.bullet_color = (60, 60, 60)
         self.bullets_allowed = 3
+
+        # Aliens setinggs
+        self.alien_moving_speed = 1.0
+        self.drop_moving_speed = 10
+        # Bergerak right = 1 ; left = -1
+        self.direction = 1
