@@ -32,6 +32,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self.bullets.update()
+            self._update_aliens()
             self._update_bullets()
             self._update_screen()
             self.clock.tick(60) # 60 seconds frame rate
@@ -86,6 +87,11 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
             
+    def _update_aliens(self):
+        """ Menggerakan alien dan cek posisi alien """
+        self._check_alien_edges()
+        self.aliens.update()
+
     def _create_fleet(self):
         """ Create fleet of aliens """
         # Bikin armada alien sepanjang screen
@@ -94,7 +100,7 @@ class AlienInvasion:
         alien_width, alien_height = alien.rect.size
 
         current_x, current_y = alien_width, alien_height
-        while current_y < self.settings.heigt - 3 * alien_height:
+        while current_y < (self.settings.heigt - 3 * alien_height):
             while current_x < (self.settings.width - 2 * alien_width):
                 self._create_alien(current_x, current_y)
                 current_x += 2 * alien_width
@@ -102,6 +108,7 @@ class AlienInvasion:
             # Reset Posisi x dan menambahkan posisi y
             current_x = alien_width
             current_y += 1.75 * alien_width
+
     def _create_alien(self, position_x, position_y):
         """ Creating alien """
         new_alien = Alien(self)
@@ -109,6 +116,20 @@ class AlienInvasion:
         new_alien.rect.x = position_x
         new_alien.rect.y = position_y
         self.aliens.add(new_alien)
+
+    def _check_alien_edges(self):
+        """ Cek apakah alien sudah di tepi screen """
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        """Drop the entire fleet and change the fleet's direction."""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.drop_moving_speed
+        self.settings.direction *= -1
+
 
     def _update_screen(self):
         # Fill the screen with color
