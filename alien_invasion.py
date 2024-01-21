@@ -4,6 +4,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullets import Bullets
+from alien import Alien
 
 class AlienInvasion:
     """ Merepresentasikan secara keseluruhan game """
@@ -21,6 +22,9 @@ class AlienInvasion:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+
+        self._create_fleet()
 
     def run_game(self):
         """ Start the main loop of the game """
@@ -33,7 +37,7 @@ class AlienInvasion:
             self.clock.tick(60) # 60 seconds frame rate
     
     def _check_events(self):
-        #! Events of the game !#
+        """  Events of the game  """
         
         #* Dibawah ini merupakan cek untuk beberapa event di game
         for event in pygame.event.get():
@@ -47,16 +51,7 @@ class AlienInvasion:
             #? Cek type event kalao user tidak klik arrow keyboard
             elif event.type == pygame.KEYUP:
                 self._check_keyup(event)
-            
-    def _update_screen(self):
-        # Fill the screen with color
-        self.screen.fill(self.settings.bg_color)
-        for bullet in self.bullets.sprites():
-            bullet.draw_bullets()
-        self.ship.blitme()
 
-        # Display  screen terlihat
-        pygame.display.flip()
     
     def _check_keydown(self, event):
         """ Responsd ketika key press """
@@ -91,6 +86,41 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
             
+    def _create_fleet(self):
+        """ Create fleet of aliens """
+        # Bikin armada alien sepanjang screen
+        # screen - 2 * ukuran alien
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+
+        current_x, current_y = alien_width, alien_height
+        while current_y < self.settings.heigt - 3 * alien_height:
+            while current_x < (self.settings.width - 2 * alien_width):
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+            
+            # Reset Posisi x dan menambahkan posisi y
+            current_x = alien_width
+            current_y += 1.75 * alien_width
+    def _create_alien(self, position_x, position_y):
+        """ Creating alien """
+        new_alien = Alien(self)
+        new_alien.x = position_x
+        new_alien.rect.x = position_x
+        new_alien.rect.y = position_y
+        self.aliens.add(new_alien)
+
+    def _update_screen(self):
+        # Fill the screen with color
+        self.screen.fill(self.settings.bg_color)
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullets()
+        self.ship.blitme()
+        self.aliens.draw(self.screen)
+
+        # Display  screen terlihat
+        pygame.display.flip()
+
 if __name__ == '__main__':
     # Run the game
     alien_invasion = AlienInvasion()
