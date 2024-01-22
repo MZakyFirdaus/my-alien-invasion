@@ -7,6 +7,7 @@ from ship import Ship
 from bullets import Bullets
 from alien import Alien
 from game_stats import GameStats
+from button import Button
 
 class AlienInvasion:
     """ Merepresentasikan secara keseluruhan game """
@@ -32,7 +33,10 @@ class AlienInvasion:
         self._create_fleet()
 
         # Ketika file dijalan, game otomotasi jalan; "True"
-        self.game_active = True
+        self.game_active = False
+
+        # Buat play button
+        self.play_button = Button(self, 'Play')
 
     def run_game(self):
         """ Mulai looping untuk game """
@@ -61,8 +65,28 @@ class AlienInvasion:
             #? Cek type event kalao user tidak klik arrow keyboard
             elif event.type == pygame.KEYUP:
                 self._check_keyup(event)
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
 
-    
+    def _check_play_button(self, mouse_pos):
+        """ Start a new game when player clik the plau button """
+        click_button = self.play_button.rect.collidepoint(mouse_pos) 
+        if click_button and not self.game_active:
+            self.stats.reset_stats()
+            self.game_active = True
+
+            # Hapus semua remaining fleet and bullets
+            self.bullets.empty()
+            self.aliens.empty()
+
+            # Creating aliens and center the ship
+            self._create_fleet()
+            self.ship.center_ship()
+
+            # Hide the cursor when the game is active
+            pygame.mouse.set_visible(False)
+
     def _check_keydown(self, event):
         """ Responsd ketika key press """
         if event.key == pygame.K_RIGHT:
@@ -134,9 +158,11 @@ class AlienInvasion:
             # Pause
             sleep(0.5)
         else:
-            self.game_active = False    
+            self.game_active = False
+            pygame.mouse.set_visible(True)    
 
     def _check_alien_bottom(self):
+        """ Ngecek apakah alien mencapai bottom atau tidak """
         for alien in self.aliens.sprites():
             if alien.rect.bottom >= self.settings.heigt:
                 self._ship_hit()
@@ -188,6 +214,10 @@ class AlienInvasion:
             bullet.draw_bullets()
         self.ship.blitme()
         self.aliens.draw(self.screen)
+
+        # Draw play button
+        if not self.game_active:
+            self.play_button.draw_button()
 
         # Display  screen terlihat
         pygame.display.flip()
