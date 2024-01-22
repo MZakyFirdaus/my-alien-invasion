@@ -86,11 +86,26 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
-            
+        
+        # Cek apakah bullets dan alien saling bertabrakan
+        #   apa tidak. Jika iya, hapus aliens
+        self._check_if_collisions()
+
+    def _check_if_collisions(self):
+        """ Cek apakah bullets dan alien saling bertabrakan"""
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.aliens, True, True)
+        
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet()
     def _update_aliens(self):
         """ Menggerakan alien dan cek posisi alien """
         self._check_alien_edges()
         self.aliens.update()
+
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            print("Buset men, tertabarak")
 
     def _create_fleet(self):
         """ Create fleet of aliens """
