@@ -73,6 +73,7 @@ class AlienInvasion:
         """ Start a new game when player clik the plau button """
         click_button = self.play_button.rect.collidepoint(mouse_pos) 
         if click_button and not self.game_active:
+            self.settings.set_dynamic_settings()
             self.stats.reset_stats()
             self.game_active = True
 
@@ -126,12 +127,16 @@ class AlienInvasion:
 
     def _check_if_collisions(self):
         """ Cek apakah bullets dan alien saling bertabrakan"""
+        # Logika bila bullets dan alien bertemu
+        #   alien akan hilang
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)
         
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
+
     def _update_aliens(self):
         """ Menggerakan alien dan cek posisi alien """
         self._check_alien_edges()
