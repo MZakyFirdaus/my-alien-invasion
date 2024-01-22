@@ -106,48 +106,15 @@ class AlienInvasion:
             self.bullets, self.aliens, True, True)
         
         if not self.aliens:
-            # Kalau semua fleet alien habis, destroy bullet sekarang
-            #   dan create new fleet
             self.bullets.empty()
             self._create_fleet()
-
-    def _ship_hit(self):
-        """ Response ketika kapal menabrak alien """
-        if self.stats.ships_left > 0:
-            #* Ketika nabrak, nyawa kapal berkurang satu
-            self.settings.ship_limits -= 1
-
-            #* New game akan berjalan, sehingga bullets dan alien group reset
-            self.aliens.empty()
-            self.bullets.empty()
-
-            #* New game akan berjalan, membuat group alien baru
-            self._create_fleet()
-            self.ship.center_ship()
-
-            # Pause
-            sleep(1.5)
-        else: 
-            #* Jika nyawa ship abis maka game over!!!
-            self.game_active = False
-
     def _update_aliens(self):
         """ Menggerakan alien dan cek posisi alien """
         self._check_alien_edges()
         self.aliens.update()
 
-        # Cek apakah kapal nabrak alien
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            self._ship_hit()
-
-        # Cek apakah alien ada melewati batas bawah
-        self._check_alien_through_bottom()
-
-    def _check_alien_through_bottom(self):
-        """ Cek apakah alien mencapai bottom of the screen """
-        for alien in self.aliens.sprites():
-            if alien.rect.bottom >= self.settings.heigt:
-                self._ship_hit()
+            print("Buset men, tertabarak")
 
     def _create_fleet(self):
         """ Create fleet of aliens """
