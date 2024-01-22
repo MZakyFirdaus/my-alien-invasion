@@ -22,6 +22,11 @@ class Ship:
         self.move_right = False
         self.move_left = False
     
+    def center_ship(self):
+        """ Centering ship in the middle of the screen """
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)
+        
     def update(self):
         """ Update posisi kapal berdasarkan movement flag """
         # Cek apakah kapal masih berada di dalam jendela
@@ -32,7 +37,8 @@ class Ship:
 
         # Update nilai self.rect.x
         self.rect.x = self.x
-        
+    
+
     def blitme(self):
         """ Draw the ship at the current position """
         self.screen.blit(self.image, self.rect)
