@@ -80,6 +80,8 @@ class AlienInvasion:
             self.settings.set_dynamic_settings()
             self.stats.reset_stats()
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ship()
             self.game_active = True
 
             # Hapus semua remaining fleet and bullets
@@ -141,11 +143,17 @@ class AlienInvasion:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)    
             self.sb.prep_score()
+            self.sb.check_high_score()
         
+        # Transisi ke level selanjutnya
         if not self.aliens:
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+
+            # Increase level
+            self.stats.level += 1
+            self.sb.prep_level()
 
     def _update_aliens(self):
         """ Menggerakan alien dan cek posisi alien """
@@ -161,6 +169,7 @@ class AlienInvasion:
         if self.stats.ships_left > 0:
             # Mengurangi sisa ships 
             self.stats.ships_left -= 1
+            self.sb.prep_ship()
 
             # Kosongkan Bullets dan Aliens
             self.bullets.empty()
