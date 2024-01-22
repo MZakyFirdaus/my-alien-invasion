@@ -79,6 +79,7 @@ class AlienInvasion:
         if click_button and not self.game_active:
             self.settings.set_dynamic_settings()
             self.stats.reset_stats()
+            self.sb.prep_score()
             self.game_active = True
 
             # Hapus semua remaining fleet and bullets
@@ -135,6 +136,11 @@ class AlienInvasion:
         #   alien akan hilang
         collisions = pygame.sprite.groupcollide(
             self.bullets, self.aliens, True, True)
+        
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)    
+            self.sb.prep_score()
         
         if not self.aliens:
             self.bullets.empty()

@@ -18,8 +18,11 @@ class Settings:
         # Aliens setinggs
         self.drop_moving_speed = 10
 
-        # Setiap level naik 10%
+        # Setiap level; kecepatan naik 10%
         self.speed_scale = 1.1
+
+        # Setiap level; points naik 150%
+        self.score_scale = 1.5
 
         # Initialize dynamic settings
         self.set_dynamic_settings()
@@ -33,8 +36,13 @@ class Settings:
         # Bergerak right = 1 ; left = -1
         self.direction = 1
 
+        # Scoring settings
+        self.alien_points = 50
+
     def increase_speed(self):
         """ Setiap naik level ubah settings dinamisnya """
         self.ship_speed *= self.speed_scale
         self.bullet_speed *= self.speed_scale
         self.alien_moving_speed *= self.speed_scale 
+
+        self.alien_points = int(self.alien_points * self.score_scale)

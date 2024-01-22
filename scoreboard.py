@@ -18,7 +18,8 @@ class ScoreBoard:
 
     def prep_score(self):
         """ Rendering text to image """
-        score_text = str(self.stats.score)
+        rounded_score = round(self.stats.score, -1)
+        score_text = f"{rounded_score:,}"
         self.score_image = self.font.render(score_text, True, 
                                              self.text_color, 
                                              self.settings.bg_color)
