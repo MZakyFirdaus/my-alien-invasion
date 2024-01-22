@@ -114,7 +114,33 @@ class AlienInvasion:
         self.aliens.update()
 
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            print("Buset men, tertabarak")
+            self._ship_hit()
+
+        self._check_alien_bottom()
+    def _ship_hit(self):
+        """ Respond to the ship being hit by an alien. """
+        if self.stats.ships_left > 0:
+            # Mengurangi sisa ships 
+            self.stats.ships_left -= 1
+
+            # Kosongkan Bullets dan Aliens
+            self.bullets.empty()
+            self.aliens.empty()
+
+            # Buat armada dan kapal baru
+            self._create_fleet()
+            self.ship.center_ship()
+
+            # Pause
+            sleep(0.5)
+        else:
+            self.game_active = False    
+
+    def _check_alien_bottom(self):
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.settings.heigt:
+                self._ship_hit()
+                break
 
     def _create_fleet(self):
         """ Create fleet of aliens """
