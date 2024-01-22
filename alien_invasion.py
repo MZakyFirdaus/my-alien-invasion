@@ -1,10 +1,12 @@
 import sys 
 import pygame 
+from time import sleep
 
 from settings import Settings
 from ship import Ship
 from bullets import Bullets
 from alien import Alien
+from game_stats import GameStats
 
 class AlienInvasion:
     """ Merepresentasikan secara keseluruhan game """
@@ -20,20 +22,28 @@ class AlienInvasion:
             (self.settings.width, self.settings.heigt))
         pygame.display.set_caption("Alien Invasion Game")
 
+        # Menyimpan statistik game di self.stats
+        self.stats = GameStats(self)
+
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
 
         self._create_fleet()
 
+        # Ketika file dijalan, game otomotasi jalan; "True"
+        self.game_active = True
+
     def run_game(self):
-        """ Start the main loop of the game """
+        """ Mulai looping untuk game """
         while True:
             self._check_events()
-            self.ship.update()
-            self.bullets.update()
-            self._update_aliens()
-            self._update_bullets()
+
+            if self.game_active:
+                self.ship.update()
+                self._update_aliens()
+                self._update_bullets()
+            
             self._update_screen()
             self.clock.tick(60) # 60 seconds frame rate
     
@@ -48,7 +58,6 @@ class AlienInvasion:
             #? Cek type event kalau user klik arrow keyboard
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown(event)
-
             #? Cek type event kalao user tidak klik arrow keyboard
             elif event.type == pygame.KEYUP:
                 self._check_keyup(event)
@@ -97,15 +106,48 @@ class AlienInvasion:
             self.bullets, self.aliens, True, True)
         
         if not self.aliens:
+            # Kalau semua fleet alien habis, destroy bullet sekarang
+            #   dan create new fleet
             self.bullets.empty()
             self._create_fleet()
+
+    def _ship_hit(self):
+        """ Response ketika kapal menabrak alien """
+        if self.stats.ships_left > 0:
+            #* Ketika nabrak, nyawa kapal berkurang satu
+            self.settings.ship_limits -= 1
+
+            #* New game akan berjalan, sehingga bullets dan alien group reset
+            self.aliens.empty()
+            self.bullets.empty()
+
+            #* New game akan berjalan, membuat group alien baru
+            self._create_alien()
+            self.ship.center_ship()
+
+            # Pause
+            sleep(1.5)
+        else: 
+            #* Jika nyawa ship abis maka game over!!!
+            self.game_active = False
+
     def _update_aliens(self):
         """ Menggerakan alien dan cek posisi alien """
         self._check_alien_edges()
         self.aliens.update()
 
+        # Cek apakah kapal nabrak alien
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            print("Buset men, tertabarak")
+            self._ship_hit()
+
+        # Cek apakah alien ada melewati batas bawah
+        self._check_alien_through_bottom()
+
+    def _check_alien_through_bottom(self):
+        """ Cek apakah alien mencapai bottom of the screen """
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.settings.heigt:
+                self._ship_hit()
 
     def _create_fleet(self):
         """ Create fleet of aliens """
@@ -145,8 +187,8 @@ class AlienInvasion:
             alien.rect.y += self.settings.drop_moving_speed
         self.settings.direction *= -1
 
-
     def _update_screen(self):
+        """ Update images on the screen, and flip to the new screen """
         # Fill the screen with color
         self.screen.fill(self.settings.bg_color)
         for bullet in self.bullets.sprites():
