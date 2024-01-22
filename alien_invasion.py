@@ -8,6 +8,7 @@ from bullets import Bullets
 from alien import Alien
 from game_stats import GameStats
 from button import Button
+from scoreboard import ScoreBoard
 
 class AlienInvasion:
     """ Merepresentasikan secara keseluruhan game """
@@ -37,6 +38,9 @@ class AlienInvasion:
 
         # Buat play button
         self.play_button = Button(self, 'Play')
+        
+        # Buat score board
+        self.sb = ScoreBoard(self)
 
     def run_game(self):
         """ Mulai looping untuk game """
@@ -215,10 +219,13 @@ class AlienInvasion:
         """ Update images on the screen, and flip to the new screen """
         # Fill the screen with color
         self.screen.fill(self.settings.bg_color)
+
+        # Draw the object of the game
         for bullet in self.bullets.sprites():
             bullet.draw_bullets()
         self.ship.blitme()
         self.aliens.draw(self.screen)
+        self.sb.draw_score()
 
         # Draw play button
         if not self.game_active:

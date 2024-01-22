@@ -9,3 +9,4 @@ class GameStats:
     def reset_stats(self):
         """ Status yang kemungkinan dapat berubah di dalam game """
         self.ships_left = self.settings.ship_limits
+        self.score = 0
